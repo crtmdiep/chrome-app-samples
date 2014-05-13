@@ -78,7 +78,12 @@
     if (typeof args.path !== 'string')
       throw new Error('path required');
 
-    var path = 'https://www.googleapis.com' + args.path;
+    if (args.root && args.root === 'string') {
+      var path = args.root + args.path;
+    } else {
+      var path = 'https://www.googleapis.com' + args.path;
+    }
+
     if (typeof args.params === 'object') {
       var deliminator = '?';
       for (var i in args.params) {
@@ -114,9 +119,13 @@
         }
       };
 
-      var jsonResp = JSON.parse(this.response);
       var rawResp = JSON.stringify(rawResponseObject);
-      args.callback(jsonResp, rawResp);
+      if (this.response) {
+        var jsonResp = JSON.parse(this.response);
+        args.callback(jsonResp, rawResp);
+      } else {
+        args.callback(null, rawResp);
+      }
     };
   };
 
